@@ -1,2 +1,2 @@
-# shell
-shell
+# nuxsky
+nuxsky
