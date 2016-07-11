@@ -1,5 +1,5 @@
 #!/bin/bash
-# v1.0.0
+# v1.0.1
 
 sclog=/data/sh/sysconfig.log
 sqlfile=/tmp/sqlfile
@@ -9,7 +9,7 @@ echo "mysql:" > $sclog
 sqldata() {
     str=`head -c 500 /dev/urandom | tr -dc 0-9a-zA-Z`
     str=${str:0:16}
-    echo -e "drop database if exists db_$1;\ncreate database db_$1 default character set utf8;\ngrant all on db_${1}.* to $1@'%' identified by '$str';"  >> $sqlfile
+    echo -e "drop database if exists db_$1;\ncreate database db_$1 default character set utf8;\ngrant all on db_${1}.* to $1@'%' identified by '$str';\nflush privileges;"  >> $sqlfile
     echo "db_$1 $1 $str" >> $sclog
 }
 
