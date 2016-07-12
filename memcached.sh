@@ -1,5 +1,5 @@
 #!/bin/sh
-# v1.0.1
+# v1.0.2
 
 meminit=/etc/init.d/memcached
 memdir=/usr/local/memcached
@@ -22,7 +22,7 @@ if [ ! -d /usr/local/memcached ]; then
   mkdir $memdir/run
 fi
 
-cp -f $memdir/scripts/memcached.sysv $meminit
+cp -f /usr/local/src/memcached-1.4.25/scripts/memcached.sysv $meminit
 sed -i 's@PORT=11211@PORT=11233@g' $meminit
 sed -i 's@USER=nobody@USER=memcached@g' $meminit
 sed -i 's@CACHESIZE=64@CACHESIZE=2048@g' $meminit
