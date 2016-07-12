@@ -1,7 +1,7 @@
 #!/bin/bash
-# v1.0.1
+# v1.0.2
 
-sclog=/data/sh/sysconfig.log
+sclog=/usr/local/src/sysconfig.log
 sqlfile=/tmp/sqlfile
 echo "mysql:" > $sclog
 :> $sqlfile
