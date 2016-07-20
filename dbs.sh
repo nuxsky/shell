@@ -1,5 +1,5 @@
 #!/bin/bash
-# v1.0.2
+# v1.0.3
 
 sclog=/usr/local/src/sysconfig.log
 sqlfile=/tmp/sqlfile
@@ -13,23 +13,25 @@ sqldata() {
     echo "db_$1 $1 $str" >> $sclog
 }
 
-for dir in `/bin/ls -la /data/www/ | grep "^d" | awk '{print $9}'`
-do
-    case $dir in
-    ecstore)
-        sqldata ecstore
-    ;;
-    bbc)
-        sqldata bbc
-    ;;
-    oms)
-        sqldata oms
-    ;;
-    crm)
-        sqldata crm
-    ;;
-    esac
-done
+if [ $1 ]; then sqldata $1; else
+    for dir in `/bin/ls -la /data/www/ | grep "^d" | awk '{print $9}'`
+    do
+        case $dir in
+        ecstore)
+            sqldata ecstore
+        ;;
+        bbc)
+            sqldata bbc
+        ;;
+        oms)
+            sqldata oms
+        ;;
+        crm)
+            sqldata crm
+        ;;
+        esac
+    done
+fi
 
 /usr/local/mysql/bin/mysql -uroot --password='' < $sqlfile
 rm -f $sqlfile
