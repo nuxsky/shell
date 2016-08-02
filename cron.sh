@@ -1,9 +1,9 @@
 #!/bin/bash
-# v1.0.1
+# v1.0.2
 
 profun() {
 	if [ $1 = 'ecstore' ] || [ $1 = 'bbc' ]; then
-	echo "* * * * * /data/www/$1/script/queue/queue.sh /usr/local/php$2/bin/php >/dev/null" >> $cronfile
+	echo "* * * * * /usr/local/php$2/bin/php /data/www/$1/script/queue/queue.sh >/dev/null" >> $cronfile
 	echo "* * * * * /usr/local/php$2/bin/php /data/www/$1/script/crontab/crontab.php >/dev/null" >> $cronfile
 	fi
 	if [ $1 = 'oms' ]; then
@@ -16,7 +16,6 @@ profun() {
 	echo "30 * * * * /bin/bash /data/www/$1/script/crontab_hour.sh" >> $cronfile
 	echo "*/15 * * * * /bin/bash /data/www/$1/script/crontab_plugin.sh" >> $cronfile
 	fi
-	
 }
 bkupsite() {
 	dbpass=`grep $1 sysconfig.log | cut -d' ' -f3`
@@ -24,13 +23,9 @@ bkupsite() {
 	echo -e "/usr/local/mysql/bin/mysqldump -h 127.0.0.1 -u$1 -p'$dbpass' db_$1 > /data/backup/data/$1-\$File\n" >> $bkupsh
 }
 
-if [ ! -d /data/backup ]; then
-	mkdir -p /data/backup/data
-fi
-
+[ -d /data/backup ] || mkdir -p /data/backup/data
 cronfile=/tmp/cronfile
 bkupsh=/data/backup/backup.sh
-scmsh=/data/backup/shopex-collect-mem.sh
 :> $cronfile
 echo -e "#!/bin/bash\nNow=\$(date +\"%d-%m-%Y--%H:%M:%S\")\nFile=backup-\$Now.sql\ngz=backup-\$Now.tar.gz\n" > $bkupsh
 
@@ -56,11 +51,13 @@ do
 	esac
 done
 
-echo 'find /data/backup/data/ -mtime +10 -exec rm -f {} \;' >> $bkupsh
-echo -e "#/bin/bash\nKILLPID=\$(ps aux|grep \"php-fpm: pool\"|grep -v grep |awk '{if(\$4>=1)print \$2}')\nDATE=\$(date +%F-%T)\necho \$KILLPID\nfor PIDS in \$KILLPID\ndo\necho \$DATE  \$PIDS >>/tmp/killpid.logs\nkill -15 \$PIDS\ndone" > $scmsh
-echo '30 3 * * * sh /data/backup/backup.sh' > ${cronfile}.root
-echo '20 */3 * * * sh /data/backup/shopex-collect-mem.sh' >> ${cronfile}.root
+echo 'find /data/backup/data/ -mtime +10 -type f -exec mv {} /tmp \;' >> $bkupsh
+echo '30 03 * * * /bin/sh /data/backup/backup.sh' > ${cronfile}.root
+echo '20 */3 * * * /bin/sh /data/backup/shopex-collect-mem.sh' >> ${cronfile}.root
+echo "01 00 * * * /bin/sh /data/backup/cut_ngx_log.sh >/dev/null 2>&1" >> ${cronfile}.root
+[ -f /data/backup/shopex-collect-mem.sh ] || wget -P /data/backup http://cfg.nuxsky.com/php/shopex-collect-mem.sh
+[ -f /data/backup/cut_ngx_log.sh ] || wget -P /data/backup http://cfg.nuxsky.com/nginx/cut_ngx_log.sh
 
 crontab -u www $cronfile
 crontab ${cronfile}.root
-rm -rf $cronfile ${cronfile}.root
+rm -f $cronfile ${cronfile}.root
