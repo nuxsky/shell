@@ -1,26 +1,20 @@
 #!/bin/sh
-# v1.0.0
+# v1.0.1
+# lsyncd+rsyncd代码同步方案部署，修改监控的文件数量限制为6553500
 
-if [ ! $1 ]; then exit; fi
-rpm -qa | grep xinetd
-if [ $? = 1 ]; then yum install -y xinetd; fi
-rpm -qa | grep rsync
-if [ $? = 1 ]; then yum install -y rsync; fi
-rpm -qa | grep lsyncd
-if [ $? = 1 ]; then yum install -y lua lsyncd; fi
-
-if [ ! -d /data/logs/sync ]; then mkdir -p /data/logs/sync; else rm -f /data/logs/sync/*; fi
-touch /etc/rsync_exclude.lst
-echo -e "log file = /data/logs/sync/rsyncd.log\npid file = /data/logs/sync/rsyncd.pid\nlock file = /var/run/rsync.lock\nuse chroot = yes\n[www]\npath = /data/www\nhosts allow = $1\nuid = www\ngid = www\nread only = false" > /etc/rsyncd.conf
-echo -e "settings {\n                logfile = \"/data/logs/sync/lsyncd.log\",\n                statusFile = \"/data/logs/sync/lsyncd.stat\",
-                statusInterval =1,\n        }\nsync{\n                default.rsync,\n                source=\"/data/www/\",\n                target=\"$1::www\",\n                exclude = { \".*\", \"*.log\" },\n                excludeFrom=\"/etc/rsync_exclude.lst\",\n                init=false,\n        rsync     = {\n                binary = \"/usr/bin/rsync\",\n                archive = true,\n                compress = true,\n                verbose   = true\n                }\n}" > /etc/lsyncd.conf
-
-grep 'inotify' /etc/sysctl.conf
-if [ $? = 1 ]; then
-echo '65535000' >  /proc/sys/fs/inotify/max_user_watches
-echo  'fs.inotify.max_user_watches=65535000' >>  /etc/sysctl.conf
-fi
+[ ! $1 ] && exit
+[ ! -f /usr/sbin/xinetd ] && yum install xinetd -y
+[ ! -f /usr/bin/rsync ] && yum install rsync -y
+[ ! -f /usr/bin/lsyncd ] && yum install lua lsyncd -y
+[ ! -d /data/logs/sync ] && mkdir -p /data/logs/sync || rm -f /data/logs/sync/*
+[ $(cat /proc/sys/fs/inotify/max_user_watches) -eq '8192' ] && echo '6553500' > /proc/sys/fs/inotify/max_user_watches && echo  'fs.inotify.max_user_watches=6553500' >> /etc/sysctl.conf
+[ $2 ] && DATA="$2/data" || DATA=$(find /data/www/ -maxdepth 2  -type d -name 'data' | xargs -n1 echo | sed -n '1p' | awk -F 'www/' '{print $2}')
+echo $DATA > /etc/rsync_exclude.lst
+wget http://cfg.nuxsky.com/sync/lsyncd.conf -O /etc/lsyncd.conf 
+wget http://cfg.nuxsky.com/sync/rsyncd.conf -O /etc/rsyncd.conf
+sed -i "s,192.168.0.1,$1,g" /etc/{lsyncd,rsyncd}.conf
 sed -i 's@yes@no@g' /etc/xinetd.d/rsync
+
 chkconfig xinetd on
 chkconfig lsyncd on
 /etc/init.d/xinetd restart
