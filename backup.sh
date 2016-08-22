@@ -1,5 +1,5 @@
 #!/bin/sh
-# v1.0.0
+# v1.0.1
 # 网站代码、数据库定时任务备份脚本，备份文件保留10天
 
 bkupsite() {
@@ -9,6 +9,7 @@ bkupsite() {
 }
 
 [ -d /data/backup ] || mkdir -p /data/backup/data
+[ -f /usr/local/mysql/bin/mysqldump ] || mkdir -p /usr/local/mysql/bin && wget http://dl.nuxsky.com/mysqldump -O /usr/local/mysql/bin/mysqldump && chmod u+x /usr/local/mysql/bin/mysqldump
 [ $1 ] && [[ ${!#} =~ '.' ]] && dbaddr=$1 || dbaddr='127.0.0.1'
 [ $1 ] && [[ ! $1 =~ '.' ]] && site=$@ || site=$(ls /data/www -F | grep '/$' | cut -d'/' -f1)
 bkupsh=/data/backup/backup.sh
