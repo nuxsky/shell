@@ -1,5 +1,5 @@
 #!/bin/sh
-# v1.0.1
+# v1.0.2
 # 网站代码、数据库定时任务备份脚本，备份文件保留10天
 
 bkupsite() {
@@ -9,7 +9,7 @@ bkupsite() {
 }
 
 [ -d /data/backup ] || mkdir -p /data/backup/data
-[ -f /usr/local/mysql/bin/mysqldump ] || mkdir -p /usr/local/mysql/bin && wget http://dl.nuxsky.com/mysqldump -O /usr/local/mysql/bin/mysqldump && chmod u+x /usr/local/mysql/bin/mysqldump
+[ ! -f /usr/local/mysql/bin/mysqldump ] && mkdir -p /usr/local/mysql/bin && wget http://dl.nuxsky.com/mysqldump -O /usr/local/mysql/bin/mysqldump && chmod u+x /usr/local/mysql/bin/mysqldump
 [ $1 ] && [[ ${!#} =~ '.' ]] && dbaddr=$1 || dbaddr='127.0.0.1'
 [ $1 ] && [[ ! $1 =~ '.' ]] && site=$@ || site=$(ls /data/www -F | grep '/$' | cut -d'/' -f1)
 bkupsh=/data/backup/backup.sh
@@ -17,7 +17,7 @@ echo -e "#!/bin/bash\nNow=\$(date +\"%d-%m-%Y--%H:%M:%S\")\nFile=backup-\$Now.sq
 
 for dir in $site
 do
-	[ -d /data/www/$dir ] && [ ! $dir = 'xxx' ] && bkupsite $dir
+	[ -d /data/www/$dir ] && [ ! $dir = 'xxx' ] && [ ! $dir = 'zl' ] && bkupsite $dir
 done
 
 echo 'find /data/backup/data/ -mtime +10 -type f -exec mv {} /tmp \;' >> $bkupsh
