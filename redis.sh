@@ -1,8 +1,8 @@
 #!/bin/sh
-# v1.0.4
+# v1.0.5
 # redis安装脚本
 
-[ $1 ] && port=$1 && rdser=_$port || port=6379
+[ $1 ] && [ ! $1 = 'wan' ] && [ ! $1 = 'lan' ]&& port=$1 && rdser=_$port || port=6379
 rdsinit=/etc/init.d/redis$rdser
 logfile=/data/logs/redis/redis$rdser.log
 rdsdir=/usr/local/redis
