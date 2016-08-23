@@ -1,13 +1,21 @@
 #!/bin/sh
-# v1.0.2
+# v1.0.3
+# memcached安装脚本
 
 meminit=/etc/init.d/memcached
 memdir=/usr/local/memcached
-if [ ! $1 ]; then
-  ipaddr=127.0.0.1
-else
-  ipaddr=`ifconfig | egrep 'inet addr:192|inet addr:10.|inet addr:172.' | head -1 | cut -d: -f2 | cut -d' ' -f1`
-fi
+
+case $1 in
+wan)
+	ipaddr=$(ifconfig | grep 'inet ' | grep -v '127.0.0.1' | cut -d':' -f2 | cut -d' ' -f1 | egrep -v '^(10.|172.|192.)')
+	;;
+lan)
+	ipaddr=$(ifconfig | grep 'inet ' | grep -v '127.0.0.1' | cut -d':' -f2 | cut -d' ' -f1 | egrep '^(10.|172.|192.)')
+	;;
+*)
+	ipaddr=127.0.0.1
+	;;
+esac
 
 if [ ! -d /usr/local/memcached ]; then
   groupadd memcached
@@ -25,7 +33,7 @@ fi
 cp -f /usr/local/src/memcached-1.4.25/scripts/memcached.sysv $meminit
 sed -i 's@PORT=11211@PORT=11233@g' $meminit
 sed -i 's@USER=nobody@USER=memcached@g' $meminit
-sed -i 's@CACHESIZE=64@CACHESIZE=2048@g' $meminit
+sed -i 's@CACHESIZE=64@CACHESIZE=1024@g' $meminit
 sed -i "s@OPTIONS=\"\"@OPTIONS=\"-l $ipaddr\"@g" $meminit
 sed -i "s@daemon memcached@daemon $memdir/bin/memcached@g" $meminit
 sed -i 's@chown@# chown@g' $meminit
