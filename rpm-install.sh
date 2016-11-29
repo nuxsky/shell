@@ -20,30 +20,30 @@ PHPDisable='';
 # Function List *****************************************************************************
 function InstallMcrypt()
 {
-     rpm -ivh http://ftp.wyaopeng.com/package/libmcrypt-2.5.8-9.el6.x86_64.rpm
+     rpm -ivh http://ftpyunwei:ftpyunwei123@ftp.wyaopeng.com/package/libmcrypt-2.5.8-9.el6.x86_64.rpm
 }
 
 function InstallNginx()
 {
-     rpm -ivh http://ftp.wyaopeng.com/package/nginx-1.8.0-1.el6.x86_64.rpm
+     rpm -ivh http://ftpyunwei:ftpyunwei123@ftp.wyaopeng.com/package/nginx-1.8.0-1.el6.x86_64.rpm
      chkconfig nginx on;
 }
 
 function InstallPhp53()
 {
-     rpm -ivh http://ftp.wyaopeng.com/package/php-5.3.29-1.el6.x86_64.rpm;
+     rpm -ivh http://ftpyunwei:ftpyunwei123@ftp.wyaopeng.com/package/php-5.3.29-1.el6.x86_64.rpm;
      chkconfig php-fpm on;
  }
 
 function InstallPhp54()
 {
-     rpm -ivh http://ftp.wyaopeng.com/package/php-5.4.45-1.el6.x86_64.rpm;
+     rpm -ivh http://ftpyunwei:ftpyunwei123@ftp.wyaopeng.com/package/php-5.4.45-1.el6.x86_64.rpm;
      chkconfig php-fpm54 on;
 }
 
 function InstallPhp56()
 {
-     rpm -ivh http://ftp.wyaopeng.com/package/php-5.6.19-1.el6.x86_64.rpm;
+     rpm -ivh http://ftpyunwei:ftpyunwei123@ftp.wyaopeng.com/package/php-5.6.19-1.el6.x86_64.rpm;
      chkconfig php-fpm56 on;
 }
 
@@ -96,12 +96,12 @@ function InstallBasePackages()
 #cat >> /etc/hosts <<EOF
 #221.236.12.140 mirrors.sohu.com 
 #EOF
-rm -rf /etc/yum.repos.d/*
+#rm -rf /etc/yum.repos.d/*
 #if [ -f /etc/yum.repos.d/ecos.repo ] ;then
-    curl  http://mirrors.shopex.cn/shopex/shopex-lnmp/shopex-lnmp.repo >/etc/yum.repos.d/ecos.repo
+    curl  http://mirrors.shopex.cn/shopex/shopex-lnmp/shopex-lnmp.repo >/etc/yum.repos.d/shopex-lnmp.repo
 #fi;
 
-/bin/cat >> /etc/yum.repos.d/ecos.repo << EOF
+/bin/cat >> /etc/yum.repos.d/shopex-lnmp.repo << EOF
 
 [centos]
 name=centos-$releasever -mirrors.sohu.com
@@ -220,7 +220,7 @@ function Getfile()
 function InstallMysql()
 {
 
-    rpm -ivh http://ftp.wyaopeng.com/package/mysql-5.6.27-1.el6.x86_64.rpm;
+    rpm -ivh http://ftpyunwei:ftpyunwei123@ftp.wyaopeng.com/package/mysql-5.6.27-1.el6.x86_64.rpm;
     chkconfig mysqld on;
        
 # EOF **********************************
