@@ -1,5 +1,5 @@
 #!/bin/sh
-# v1.0.2
+# v1.0.3
 # 网站代码、数据库定时任务备份脚本，备份文件保留10天
 
 bkupsite() {
@@ -20,5 +20,5 @@ do
 	[ -d /data/www/$dir ] && [ ! $dir = 'xxx' ] && [ ! $dir = 'zl' ] && bkupsite $dir
 done
 
-echo 'find /data/backup/data/ -mtime +10 -type f -exec mv {} /tmp \;' >> $bkupsh
+echo 'find /data/backup/data/ -mtime +10 -type f -exec rm -f {} \;' >> $bkupsh
 [[ $(crontab -l) =~ 'backup.sh' ]] || echo '30 03 * * * /bin/sh /data/backup/backup.sh' >> /var/spool/cron/root
