@@ -22,9 +22,9 @@ esac
 
 if [ ! -d /usr/local/redis ];then
   cd /usr/local/src
-  wget http://pkg.nuxsky.com/redis-3.0.7.tar.gz
-  tar zxf redis-3.0.7.tar.gz
-  mv /usr/local/src/redis-3.0.7 $rdsdir
+  wget http://pkg.nuxsky.com/redis-3.2.10.tar.gz
+  tar zxf redis-3.2.10.tar.gz
+  mv /usr/local/src/redis-3.2.10 $rdsdir
   cd $rdsdir
   mkdir run conf
   mkdir -p /data/logs/redis
