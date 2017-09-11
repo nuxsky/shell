@@ -42,7 +42,7 @@ cp -f ${rdsdir}/redis.conf $rdsconf
 sed -i 's@daemonize no@daemonize yes@g' $rdsconf
 sed -i "s@port 6379@port $port@g" $rdsconf
 sed -i "s@pidfile /var/run/redis_6379.pid@pidfile ${rdsdir}/run/${port}.pid@g" $rdsconf
-sed -i "s@# bind 127.0.0.1@bind $ipaddr@g" $rdsconf
+sed -i "s@bind 127.0.0.1@bind $ipaddr@g" $rdsconf
 sed -i "s@logfile \"\"@logfile \"$logfile\"@g"  $rdsconf
 sed -i "s@dir ./@dir /data/redis/$port@g"  $rdsconf
 mkdir -p /data/redis/$port
